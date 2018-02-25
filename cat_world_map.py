@@ -4,7 +4,11 @@ import pandas as pd
 import argparse
 import numpy as np
 
-mapbox_access_token = 'pk.eyJ1IjoiYWxpamFtNDIiLCJhIjoiY2o0NGp0MW1hMWVkdTJwb3pqMnZ5MWE1aSJ9.pp_ayB2JvSsoIcTkykTqEA'
+mapbox_access_token ='MAPBOX_API_KEY'
+plotly_username = 'USERNAME'
+plotly_api_key = 'API_KEY'
+
+py.set_credentials_file(username=plotly_username, api_key = plotly_api_key)
 
 
 def parse_args():
