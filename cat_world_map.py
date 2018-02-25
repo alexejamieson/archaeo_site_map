@@ -2,6 +2,7 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 import pandas as pd
 import argparse
+import numpy as np
 
 mapbox_access_token = 'pk.eyJ1IjoiYWxpamFtNDIiLCJhIjoiY2o0NGp0MW1hMWVkdTJwb3pqMnZ5MWE1aSJ9.pp_ayB2JvSsoIcTkykTqEA'
 Test = 'nameoftest'
@@ -14,8 +15,8 @@ def parse_args():
 	return args.csv_file
 
 def main():
-	input_file2 = parse_args()
-	Lat, Long, Site, Period = readcsv(input_file2)	
+	input_filename = parse_args()
+	Lat, Long, Site, Period = readcsv(input_filename)	
 	make_map(mapbox_access_token, Lat, Long, Site, Test)
 
 def readcsv(input_file):
@@ -44,11 +45,11 @@ def make_map(token,latitude,longitude,hovertext,filename):
 			accesstoken=token,
 			bearing=0,
 			center=dict(
-				lat=38.92,
-				lon=-77.07
+				lat= np.median(latitude),
+				lon=-np.median(longitude),
 			),
 			pitch=0,
-			zoom=10
+			zoom=3
 		),
 	)
 
