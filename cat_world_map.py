@@ -4,12 +4,9 @@ import pandas as pd
 import argparse
 import numpy as np
 
-mapbox_access_token ='MAPBOX_API_KEY'
-plotly_username = 'USERNAME'
-plotly_api_key = 'API_KEY'
-
-py.set_credentials_file(username=plotly_username, api_key = plotly_api_key)
-
+#make a txt file with your access key for mapbox
+fobj = open('mapbox_accesstoken.txt')
+mapbox_access_token = fobj.read()
 
 def parse_args():
 	"""Parse the command line arguments"""
