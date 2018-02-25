@@ -30,6 +30,13 @@ def hovertextformat(site,period):
 	period_str = ['<b>Period:</b> {}'.format(name) for name in period]
 	return [[item[0] + "<br>" + item[1]] for item in zip(site_str, period_str)]
 	
+def split_data(dataframe, dataframe_pivot):
+	unique_vals= dataframe_pivot.unique().tolist()
+	dicty = dict.fromkeys(unique_vals)
+	for key in unique_vals:
+		dicty[key]=dataframe[obj.Period==key]
+	return dicty,unique_vals
+	
 def make_map(token,latitude,longitude,site, period, title):
 
 
