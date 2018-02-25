@@ -38,7 +38,7 @@ def split_data(dataframe, dataframe_pivot):
     return dicty,unique_vals
 
 def map_data(lat, lon, text):
-        data = Scattermapbox(
+    data = Scattermapbox(
                         lat=lat,
                         lon=lon,
                         mode='scattermapbox+markers',
