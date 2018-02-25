@@ -18,7 +18,7 @@ def parse_args():
 
 def main():
 	input_filename, title = parse_args()
-	Lat, Long, Site, Period = readcsv(input_filename)	
+	Lat, Long, Site, Period = readcsv(input_filename)
 	make_map(mapbox_access_token, Lat, Long, Site, Period, title)
 
 def readcsv(input_file):
@@ -29,48 +29,54 @@ def hovertextformat(site,period):
 	site_str = ['<b>Site:</b> {}'.format(name) for name in site]
 	period_str = ['<b>Period:</b> {}'.format(name) for name in period]
 	return [[item[0] + "<br>" + item[1]] for item in zip(site_str, period_str)]
-	
+
 def split_data(dataframe, dataframe_pivot):
 	unique_vals= dataframe_pivot.unique().tolist()
 	dicty = dict.fromkeys(unique_vals)
 	for key in unique_vals:
 		dicty[key]=dataframe[obj.Period==key]
 	return dicty,unique_vals
-	
+
+def map_data(lat, lon, text):
+        data = Scattermapbox(
+                        lat=lat,
+                        lon=lon,
+                        mode='scattermapbox+markers',
+                        hoverinfo='text',
+                        marker=Marker(
+                                size=9
+                        ),
+                        text=text
+                )
+	return data
+
+def map_layout(token, title, lat_centre, lon_centre):
+	lay = Layout(
+                autosize=True,
+                title=title,
+                hovermode='closest',
+                mapbox=dict(
+                        accesstoken=token,
+                        bearing=0,
+                        center=dict(
+                                lat= lat_centre,
+                                lon=lon_centre
+                        ),
+                        pitch=0,
+                        zoom=3
+                ))
+	return lay
+
 def make_map(token,latitude,longitude,site, period, title):
-
-
-	data = Data([
-		Scattermapbox(
-			lat=latitude,
-			lon=longitude,
-			mode='scattermapbox+markers',
-			hoverinfo='text',
-			marker=Marker(
-				size=9
-			),
-			text=hovertextformat(site,period)
-		),
+	data = Data([map_data(latitude, longitude, hovertextformat(site,period))
 	])
-	layout = Layout(
-		autosize=True,
-		title=title,
-		hovermode='closest',
-		mapbox=dict(
-			accesstoken=token,
-			bearing=0,
-			center=dict(
-				lat= np.median(latitude),
-				lon=-np.median(longitude),
-			), 
-			pitch=0,
-			zoom=3
-		),
-	)
+	layout =map_layout(token, title, np.median(latitude), np.median(longitude))
 
 	fig = dict(data=data, layout=layout)
 	py.plot(fig)
 
-	
+
 if __name__ == '__main__':
 	main()
+
+
