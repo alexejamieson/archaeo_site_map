@@ -18,8 +18,8 @@ def parse_args():
 
 def main():
     input_filename, title = parse_args()
-    Lat, Long, Site, Period = readcsv(input_filename)
-    make_map(mapbox_access_token, Lat, Long, Site, Period, title)
+    data = pd.read_csv(input_filename)
+    make_map(mapbox_access_token, data, title)
 
 def readcsv(input_file):
     data = pd.read_csv(input_file)
@@ -34,7 +34,7 @@ def split_data(dataframe, dataframe_pivot):
     unique_vals= dataframe_pivot.unique().tolist()
     dicty = dict.fromkeys(unique_vals)
     for key in unique_vals:
-        dicty[key]=dataframe[obj.Period==key]
+        dicty[key]=dataframe[dataframe.Period==key]
     return dicty,unique_vals
 
 def map_data(lat, lon, text):
@@ -67,12 +67,18 @@ def map_layout(token, title, lat_centre, lon_centre):
                 ))
     return lay
 
-def make_map(token,latitude,longitude,site, period, title):
-    data = Data([map_data(latitude, longitude, hovertextformat(site,period))
-    ])
-    layout =map_layout(token, title, np.median(latitude), np.median(longitude))
+def make_map(token, data, title):
+    data_dict, unique_vals = split_data(data, data.Period)
+    map_data_list = [] 
+    for key in unique_vals:
+         map_data_list.append(map_data(data_dict[key].Lat.tolist(),
+                               data_dict[key].Long.tolist(),
+                               hovertextformat(data_dict[key].Site.tolist(), data_dict[key].Period.tolist())))
 
-    fig = dict(data=data, layout=layout)
+    plot_data = Data(map_data_list)
+    layout =map_layout(token, title, np.median(data.Lat.tolist()), np.median(data.Long.tolist()))
+
+    fig = dict(data=plot_data, layout=layout)
     py.plot(fig)
 
 
