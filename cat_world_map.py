@@ -36,7 +36,7 @@ def make_map(token,latitude,longitude,hovertext,title):
 			marker=Marker(
 				size=9
 			),
-			text=hovertext,
+			text=['<b>Site:</b> {}'.format(name) for name in hovertext]
 		)
 	])
 	layout = Layout(
