@@ -27,7 +27,7 @@ def readcsv(input_file):
 def hovertextformat(site,period):
 	site_str = ['<b>Site:</b> {}'.format(name) for name in site]
 	period_str = ['<b>Period:</b> {}'.format(name) for name in period]
-	return [[item[0],item[1]] for item in zip(site_str, period_str)]
+	return [[item[0] + "<br>" + item[1]] for item in zip(site_str, period_str)]
 	
 def make_map(token,latitude,longitude,site, period, title):
 
