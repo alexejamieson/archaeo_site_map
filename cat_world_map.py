@@ -18,26 +18,31 @@ def parse_args():
 def main():
 	input_filename, title = parse_args()
 	Lat, Long, Site, Period = readcsv(input_filename)	
-	make_map(mapbox_access_token, Lat, Long, Site, title)
+	make_map(mapbox_access_token, Lat, Long, Site, Period, title)
 
 def readcsv(input_file):
 	data = pd.read_csv(input_file)
 	return data.Lat.tolist(), data.Long.tolist(), data.Site.tolist(), data.Period.tolist()
 
-
-def make_map(token,latitude,longitude,hovertext,title):
+def hovertextformat(site,period):
+	site_str = ['<b>Site:</b> {}'.format(name) for name in site]
+	period_str = ['<b>Period:</b> {}'.format(name) for name in period]
+	return [[item[0],item[1]] for item in zip(site_str, period_str)]
+	
+def make_map(token,latitude,longitude,site, period, title):
 
 
 	data = Data([
 		Scattermapbox(
 			lat=latitude,
 			lon=longitude,
-			mode='markers',
+			mode='scattermapbox+markers',
+			hoverinfo='text',
 			marker=Marker(
 				size=9
 			),
-			text=['<b>Site:</b> {}'.format(name) for name in hovertext]
-		)
+			text=hovertextformat(site,period)
+		),
 	])
 	layout = Layout(
 		autosize=True,
