@@ -1,45 +1,60 @@
 import plotly.plotly as py
 from plotly.graph_objs import *
+import pandas as pd
+import argparse
 
 mapbox_access_token = 'pk.eyJ1IjoiYWxpamFtNDIiLCJhIjoiY2o0NGp0MW1hMWVkdTJwb3pqMnZ5MWE1aSJ9.pp_ayB2JvSsoIcTkykTqEA'
+Test = 'nameoftest'
 
-data = Data([
-    Scattermapbox(
-        lat=['38.91427','38.91538','38.91458',
-             '38.92239','38.93222','38.90842',
-             '38.91931','38.93260','38.91368',
-             '38.88516','38.921894','38.93206',
-             '38.91275'],
-        lon=['-77.02827','-77.02013','-77.03155',
-             '-77.04227','-77.02854','-77.02419',
-             '-77.02518','-77.03304','-77.04509',
-             '-76.99656','-77.042438','-77.02821',
-             '-77.01239'],
-        mode='markers',
-        marker=Marker(
-            size=9
-        ),
-        text=["The coffee bar","Bistro Bohem","Black Cat",
-             "Snap","Columbia Heights Coffee","Azi's Cafe",
-             "Blind Dog Cafe","Le Caprice","Filter",
-             "Peregrine","Tryst","The Coupe",
-             "Big Bear Cafe"],
-    )
-])
-layout = Layout(
-    autosize=True,
-    hovermode='closest',
-    mapbox=dict(
-        accesstoken=mapbox_access_token,
-        bearing=0,
-        center=dict(
-            lat=38.92,
-            lon=-77.07
-        ),
-        pitch=0,
-        zoom=10
-    ),
-)
+def parse_args():
+	"""Parse the command line arguments"""
+	parser = argparse.ArgumentParser(description='Make a map')
+	parser.add_argument('csv_file', type=str,help='csv file containing data')
+	args = parser.parse_args()
+	return args.csv_file
 
-fig = dict(data=data, layout=layout)
-py.plot(fig, filename='test_mapbox')
+def main():
+	input_file2 = parse_args()
+	Lat, Long, Site, Period = readcsv(input_file2)	
+	make_map(mapbox_access_token, Lat, Long, Site, Test)
+
+def readcsv(input_file):
+	data = pd.read_csv(input_file)
+	return data.Lat.tolist(), data.Long.tolist(), data.Site.tolist(), data.Period.tolist()
+
+
+def make_map(token,latitude,longitude,hovertext,filename):
+
+
+	data = Data([
+		Scattermapbox(
+			lat=latitude,
+			lon=longitude,
+			mode='markers',
+			marker=Marker(
+				size=9
+			),
+			text=hovertext,
+		)
+	])
+	layout = Layout(
+		autosize=True,
+		hovermode='closest',
+		mapbox=dict(
+			accesstoken=token,
+			bearing=0,
+			center=dict(
+				lat=38.92,
+				lon=-77.07
+			),
+			pitch=0,
+			zoom=10
+		),
+	)
+
+	fig = dict(data=data, layout=layout)
+	py.plot(fig, filename=filename)
+
+	
+if __name__ == '__main__':
+	main()
