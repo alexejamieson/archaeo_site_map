@@ -33,10 +33,6 @@ def get_map_box_token():
                "can place your mapbox access token into it.")
     return mapbox_access_token
 
-def readcsv(input_file):
-    data = pd.read_csv(input_file)
-    return data.Lat.tolist(), data.Long.tolist(), data.Site.tolist(), data.Period.tolist()
-
 def hovertextformat(site,period):
     site_str = ['<b>Site:</b> {}'.format(name) for name in site]
     period_str = ['<b>Period:</b> {}'.format(name) for name in period]
