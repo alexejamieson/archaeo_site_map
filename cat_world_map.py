@@ -3,10 +3,7 @@ from plotly.graph_objs import *
 import pandas as pd
 import argparse
 import numpy as np
-
-#make a txt file with your access key for mapbox
-fobj = open('mapbox_accesstoken.txt')
-mapbox_access_token = fobj.read()
+import os
 
 def parse_args():
     """Parse the command line arguments"""
@@ -19,7 +16,22 @@ def parse_args():
 def main():
     input_filename, title = parse_args()
     data = pd.read_csv(input_filename)
-    make_map(mapbox_access_token, data, title)
+    mapbox_access_token = get_map_box_token()
+    if mapbox_access_token:
+       make_map(mapbox_access_token, data, title)
+
+def get_map_box_token():
+    """Check to see whether a text file containing the require mapbox access
+       token is present. If it is not, then complain about it."""
+    mapbox_access_token = None
+    if(os.path.isfile('mapbox_accesstoken.txt')):
+        fobj = open('mapbox_accesstoken.txt')
+        mapbox_access_token = fobj.read()
+    else:
+        print("There is not mapbox access token file. To continue "
+              "please create a file call 'mapbox_accesstoken.txt' "
+               "can place your mapbox access token into it.")
+    return mapbox_access_token
 
 def readcsv(input_file):
     data = pd.read_csv(input_file)
