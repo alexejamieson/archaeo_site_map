@@ -45,7 +45,7 @@ def split_data(dataframe, dataframe_pivot):
         dicty[key]=dataframe[dataframe.Period==key]
     return dicty,unique_vals
 
-def map_data(lat, lon, text):
+def map_data(lat, lon, text, tracename):
     data = Scattermapbox(
                         lat=lat,
                         lon=lon,
@@ -54,7 +54,8 @@ def map_data(lat, lon, text):
                         marker=Marker(
                                 size=9
                         ),
-                        text=text
+                        text=text,
+                        name=tracename
                 )
     return data
 
@@ -81,7 +82,8 @@ def make_map(token, data, title):
     for key in unique_vals:
          map_data_list.append(map_data(data_dict[key].Lat.tolist(),
                                data_dict[key].Long.tolist(),
-                               hovertextformat(data_dict[key].Site.tolist(), data_dict[key].Period.tolist())))
+                               hovertextformat(data_dict[key].Site.tolist(), data_dict[key].Period.tolist()),
+                               str(key)))
 
     plot_data = Data(map_data_list)
     layout =map_layout(token, title, np.median(data.Lat.tolist()), np.median(data.Long.tolist()))
