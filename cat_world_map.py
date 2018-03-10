@@ -3,10 +3,7 @@ from plotly.graph_objs import *
 import pandas as pd
 import argparse
 import numpy as np
-
-#make a txt file with your access key for mapbox
-fobj = open('mapbox_accesstoken.txt')
-mapbox_access_token = fobj.read()
+import os
 
 def parse_args():
     """Parse the command line arguments"""
@@ -19,11 +16,22 @@ def parse_args():
 def main():
     input_filename, title = parse_args()
     data = pd.read_csv(input_filename)
-    make_map(mapbox_access_token, data, title)
+    mapbox_access_token = get_map_box_token()
+    if mapbox_access_token:
+       make_map(mapbox_access_token, data, title)
 
-def readcsv(input_file):
-    data = pd.read_csv(input_file)
-    return data.Lat.tolist(), data.Long.tolist(), data.Site.tolist(), data.Period.tolist()
+def get_map_box_token():
+    """Check to see whether a text file containing the require mapbox access
+       token is present. If it is not, then complain about it."""
+    mapbox_access_token = None
+    if(os.path.isfile('mapbox_accesstoken.txt')):
+        fobj = open('mapbox_accesstoken.txt')
+        mapbox_access_token = fobj.read()
+    else:
+        print("There is not mapbox access token file. To continue "
+              "please create a file call 'mapbox_accesstoken.txt' "
+               "can place your mapbox access token into it.")
+    return mapbox_access_token
 
 def hovertextformat(site,period):
     site_str = ['<b>Site:</b> {}'.format(name) for name in site]
@@ -37,7 +45,7 @@ def split_data(dataframe, dataframe_pivot):
         dicty[key]=dataframe[dataframe.Period==key]
     return dicty,unique_vals
 
-def map_data(lat, lon, text):
+def map_data(lat, lon, text, tracename):
     data = Scattermapbox(
                         lat=lat,
                         lon=lon,
@@ -46,7 +54,8 @@ def map_data(lat, lon, text):
                         marker=Marker(
                                 size=9
                         ),
-                        text=text
+                        text=text,
+                        name=tracename
                 )
     return data
 
@@ -73,7 +82,8 @@ def make_map(token, data, title):
     for key in unique_vals:
          map_data_list.append(map_data(data_dict[key].Lat.tolist(),
                                data_dict[key].Long.tolist(),
-                               hovertextformat(data_dict[key].Site.tolist(), data_dict[key].Period.tolist())))
+                               hovertextformat(data_dict[key].Site.tolist(), data_dict[key].Period.tolist()),
+                               str(key)))
 
     plot_data = Data(map_data_list)
     layout =map_layout(token, title, np.median(data.Lat.tolist()), np.median(data.Long.tolist()))
